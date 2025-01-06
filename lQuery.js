@@ -1,8 +1,10 @@
 const $ = function (query) {
-    return new LQuery(query)
+    if (query) {
+        return new LQueryDOM(query)
+    }
 }
 
-class LQuery {
+class LQueryDOM {
     constructor(query) {
         this.dom = [...document.querySelectorAll(query)]
     }
