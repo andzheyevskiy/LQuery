@@ -80,7 +80,7 @@ class LQueryDOM {
      * - `value` (string) [Optional]: If provided, sets the attribute to the specified value for the element/s.
      * 
      * ### Returns: 
-     * - Returns the instance (`this`) for method chaining when setting the value.
+     * - Returns the instance "this" for method chaining when setting the value.
      * - Returns an array of inner values matching the name of the attibute of the element/s when getting the value.
      * */
     attr(name, value) {
@@ -119,4 +119,61 @@ class LQueryDOM {
             return this
         }
     }
+
+    /**
+     *  **append()** - Append html to element/s
+     * 
+     * ### Parameters:
+     * - "html" (string): html or text to append
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    append(html){
+        this.dom.forEach(e=>e.insertAdjacentHTML("beforeend",html))
+        return this
+    }
+
+    /**
+     *  **prepend()** - Prepend html to element/s
+     * 
+     * ### Parameters:
+     * - "html" (string): html or text to prepend
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    prepend(html){
+        this.dom.forEach(e=>e.insertAdjacentHTML("afterbegin",html))
+        return this
+    }
+
+    /**
+     *  **after()** - Insert html after the element/s
+     * 
+     * ### Parameters:
+     * - "html" (string): html or text to insert
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    after(html){
+        this.dom.forEach(e=>e.insertAdjacentHTML("afterend",html))
+        return this
+    }
+
+    /**
+     *  **before()** - Insert html before the element/s
+     * 
+     * ### Parameters:
+     * - "html" (string): html or text to insert
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    before(html){
+        this.dom.forEach(e=>e.insertAdjacentHTML("beforebegin",html))
+        return this
+    }
 }
+
