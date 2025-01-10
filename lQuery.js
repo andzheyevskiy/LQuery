@@ -24,7 +24,12 @@ class LQueryDOM {
             this.dom.forEach(e => e.innerHTML = html)
             return this
         } else {
-            return this.dom.map(e => e.innerHTML)
+            const result = this.dom.map(e => e.innerHTML)
+            if (result.length === 1) {
+                return result[0]
+            } else {
+                return result
+            }
         }
     }
 
@@ -43,7 +48,12 @@ class LQueryDOM {
             this.dom.forEach(e => e.textContent = text)
             return this
         } else {
-            return this.dom.map(e => e.textContent)
+            const result = this.dom.map(e => e.textContent)
+            if (result.length === 1) {
+                return result[0]
+            } else {
+                return result
+            }
         }
     }
 
@@ -68,7 +78,12 @@ class LQueryDOM {
             })
             return this
         } else {
-            return this.dom.map(e => e.getAttribute("value"))
+            const result = this.dom.map(e => e.getAttribute("value"))
+            if (result.length === 1) {
+                return result[0]
+            } else {
+                return result
+            }
         }
     }
 
@@ -88,7 +103,12 @@ class LQueryDOM {
             this.dom.forEach(e => e.setAttribute(name, value))
             return this
         } else if (name) {
-            return this.dom.map(e => e.getAttribute(name))
+            const result = this.dom.map(e => e.getAttribute(name))
+            if (result.length === 1) {
+                return result[0]
+            } else {
+                return result
+            }
         } else {
             return this
         }
@@ -129,8 +149,8 @@ class LQueryDOM {
      * ### Returns:
      * - Returns instance of "this" for method chaining when setting the value.
      */
-    append(html){
-        this.dom.forEach(e=>e.insertAdjacentHTML("beforeend",html))
+    append(html) {
+        this.dom.forEach(e => e.insertAdjacentHTML("beforeend", html))
         return this
     }
 
@@ -143,8 +163,8 @@ class LQueryDOM {
      * ### Returns:
      * - Returns instance of "this" for method chaining when setting the value.
      */
-    prepend(html){
-        this.dom.forEach(e=>e.insertAdjacentHTML("afterbegin",html))
+    prepend(html) {
+        this.dom.forEach(e => e.insertAdjacentHTML("afterbegin", html))
         return this
     }
 
@@ -157,8 +177,8 @@ class LQueryDOM {
      * ### Returns:
      * - Returns instance of "this" for method chaining when setting the value.
      */
-    after(html){
-        this.dom.forEach(e=>e.insertAdjacentHTML("afterend",html))
+    after(html) {
+        this.dom.forEach(e => e.insertAdjacentHTML("afterend", html))
         return this
     }
 
@@ -171,8 +191,8 @@ class LQueryDOM {
      * ### Returns:
      * - Returns instance of "this" for method chaining when setting the value.
      */
-    before(html){
-        this.dom.forEach(e=>e.insertAdjacentHTML("beforebegin",html))
+    before(html) {
+        this.dom.forEach(e => e.insertAdjacentHTML("beforebegin", html))
         return this
     }
 }
