@@ -219,7 +219,7 @@ class LQueryDOM {
      * - "fn" (function): function to add as event.
      * 
      * ### Returns:
-     * - Returns instance of "this" for method chaining when setting the value.
+     * - Returns instance of "this" for method chaining.
      */
     on(type, fn) {
         this.dom.forEach(e => e.addEventListener(type, fn))
@@ -234,7 +234,7 @@ class LQueryDOM {
      * - "fn" (function): named function to remove from listener.
      * 
      * ### Returns:
-     * - Returns instance of "this" for method chaining when setting the value.
+     * - Returns instance of "this" for method chaining.
      */
     off(type, fn) {
         this.dom.forEach(e => e.removeEventListener(type, fn))
@@ -248,7 +248,7 @@ class LQueryDOM {
      * - "fn" (function) [optional]: When provided, function to add as event.
      * 
      * ### Returns:
-     * - Returns instance of "this" for method chaining when setting the value.
+     * - Returns instance of "this" for method chaining.
      */
     click(fn) {
         if (fn) {
@@ -266,7 +266,7 @@ class LQueryDOM {
      * - "fn" (function) [optional]: When provided, function to add as event.
      * 
      * ### Returns:
-     * - Returns instance of "this" for method chaining when setting the value.
+     * - Returns instance of "this" for method chaining.
      */
     dblclick(fn) {
         if (fn) {
@@ -285,7 +285,7 @@ class LQueryDOM {
      * - "fnOnLeave" (function) [optional]: function to add as event when mouse leaves the element.
      * 
      * ### Returns:
-     * - Returns instance of "this" for method chaining when setting the value.
+     * - Returns instance of "this" for method chaining.
      */
     hover(fnOnHover, fnOnLeave) {
         this.dom.forEach(e => {
@@ -304,7 +304,7 @@ class LQueryDOM {
      * - "fn" (function) [optional]: When provided, function to add as event.
      * 
      * ### Returns:
-     * - Returns instance of "this" for method chaining when setting the value.
+     * - Returns instance of "this" for method chaining.
      */
     focus(fn) {
         if (fn) {
@@ -323,7 +323,7 @@ class LQueryDOM {
      * - "fn" (function) [optional]: When provided, function to add as event.
      * 
      * ### Returns:
-     * - Returns instance of "this" for method chaining when setting the value.
+     * - Returns instance of "this" for method chaining.
      */
     blur(fn) {
         if (fn) {
@@ -341,7 +341,7 @@ class LQueryDOM {
      * - "type" (string): event type to trigger
      * 
      * ### Returns:
-     * - Returns instance of "this" for method chaining when setting the value.
+     * - Returns instance of "this" for method chaining.
      */
     trigger(type) {
         const event = new Event(type)
