@@ -10,6 +10,21 @@ class LQueryDOM {
     }
 
     /**
+     *  **$(document).ready()** - Runs inside code after DOM is loaded.
+     * 
+     * ### Parameters:
+     * - "fn" (function): function to run once the DOM is loaded.
+     * 
+     * ### Returns:
+     * - void.
+     */
+    ready(fn) {
+        if (this.dom.length === 1 && this.dom[0] instanceof Document) {
+            document.addEventListener("DOMContentLoaded", fn)
+        }
+    }
+
+    /**
      * **html()** - Get or set the html contents of the element/s.
      * 
      * ### Parameters:
@@ -195,5 +210,111 @@ class LQueryDOM {
         this.dom.forEach(e => e.insertAdjacentHTML("beforebegin", html))
         return this
     }
-}
 
+    /**
+     *  **on()** - Adds event to the element/s
+     * 
+     * ### Parameters:
+     * - "type" (string): event listener type to add.
+     * - "fn" (function): function to add as event.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    on(type, fn) {
+        this.dom.forEach(e => e.addEventListener(type, fn))
+        return this
+    }
+
+    /**
+     *  **off()** - Removes event from the element/s.
+     * 
+     * ### Parameters:
+     * - "type" (string): event listener type to remove.
+     * - "fn" (function): named function to remove from listener.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    off(type, fn) {
+        this.dom.forEach(e => e.removeEventListener(type, fn))
+        return this
+    }
+
+    /**
+     *  **click()** - add event to run when element is clicked
+     * 
+     * ### Parameters:
+     * - "fn" (function): function to add as event.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    click(fn) {
+        this.dom.forEach(e => e.addEventListener("click", fn))
+        return this
+    }
+
+    /**
+     *  **dblclick()** - add event to run when element is double clicked
+     * 
+     * ### Parameters:
+     * - "fn" (function): function to add as event.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    dblclick(fn) {
+        this.dom.forEach(e => e.addEventListener("dblclick", fn))
+        return this
+    }
+
+    /**
+     *  **hover()** - add event to when the cursor enters the elements and when it leaves.
+     * 
+     * ### Parameters:
+     * - "fnOnHover" (function): function to add as event when mouse enters the element.
+     * - "fnOnLeave" (function) [optional]: function to add as event when mouse leaves the element.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    hover(fnOnHover, fnOnLeave) {
+        this.dom.forEach(e => {
+            e.addEventListener("mouseenter", fnOnHover)
+            if (fnOnLeave) {
+                e.addEventListener("mouseleave", fnOnLeave)
+            }
+        })
+        return this
+    }
+
+    /**
+     *  **focus()** - add event to run when element is focused.
+     * 
+     * ### Parameters:
+     * - "fn" (function): function to add as event.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    focus(fn) {
+        this.dom.forEach(e => e.addEventListener("focus", fn))
+        return this
+    }
+
+    /**
+     *  **blur()** - add event to run when element looses focused.
+     * 
+     * ### Parameters:
+     * - "fn" (function): function to add as event.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    blur(fn) {
+        this.dom.forEach(e => e.addEventListener("blur", fn))
+        return this
+    }
+
+}
