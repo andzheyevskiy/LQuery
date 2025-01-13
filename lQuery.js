@@ -242,35 +242,43 @@ class LQueryDOM {
     }
 
     /**
-     *  **click()** - add event to run when element is clicked
+     *  **click()** - add event to run when element/s is clicked. When no argument is provided, programatically execute a click event.
      * 
      * ### Parameters:
-     * - "fn" (function): function to add as event.
+     * - "fn" (function) [optional]: When provided, function to add as event.
      * 
      * ### Returns:
      * - Returns instance of "this" for method chaining when setting the value.
      */
     click(fn) {
-        this.dom.forEach(e => e.addEventListener("click", fn))
+        if (fn) {
+            this.dom.forEach(e => e.addEventListener("click", fn))
+        } else {
+            this.dom.forEach(e => e.dispatchEvent(new Event("click")))
+        }
         return this
     }
 
     /**
-     *  **dblclick()** - add event to run when element is double clicked
+     *  **dblclick()** - add event to run when element/s is double clicked. When no argument is provided, programatically execute a dobule click event.
      * 
      * ### Parameters:
-     * - "fn" (function): function to add as event.
+     * - "fn" (function) [optional]: When provided, function to add as event.
      * 
      * ### Returns:
      * - Returns instance of "this" for method chaining when setting the value.
      */
     dblclick(fn) {
-        this.dom.forEach(e => e.addEventListener("dblclick", fn))
+        if (fn) {
+            this.dom.forEach(e => e.addEventListener("dblclick", fn))
+        } else {
+            this.dom.forEach(e => e.dispatchEvent(new Event("dblclick")))
+        }
         return this
     }
 
     /**
-     *  **hover()** - add event to when the cursor enters the elements and when it leaves.
+     *  **hover()** - add event to when the cursor enters the element/s and when it leaves.
      * 
      * ### Parameters:
      * - "fnOnHover" (function): function to add as event when mouse enters the element.
@@ -290,31 +298,54 @@ class LQueryDOM {
     }
 
     /**
-     *  **focus()** - add event to run when element is focused.
+     *  **focus()** - add event to run when element/s is focused. When no argument is provided, programatically execute a focused event.
      * 
      * ### Parameters:
-     * - "fn" (function): function to add as event.
+     * - "fn" (function) [optional]: When provided, function to add as event.
      * 
      * ### Returns:
      * - Returns instance of "this" for method chaining when setting the value.
      */
     focus(fn) {
-        this.dom.forEach(e => e.addEventListener("focus", fn))
+        if (fn) {
+            this.dom.forEach(e => e.addEventListener("focus", fn))
+        }
+        else {
+            this.dom.forEach(e => e.dispatchEvent(new Event("focus")))
+        }
         return this
     }
 
     /**
-     *  **blur()** - add event to run when element looses focused.
+     *  **blur()** - add event to run when element looses focused. When no argument is provided, programatically execute a not:focused event.
      * 
      * ### Parameters:
-     * - "fn" (function): function to add as event.
+     * - "fn" (function) [optional]: When provided, function to add as event.
      * 
      * ### Returns:
      * - Returns instance of "this" for method chaining when setting the value.
      */
     blur(fn) {
-        this.dom.forEach(e => e.addEventListener("blur", fn))
+        if (fn) {
+            this.dom.forEach(e => e.addEventListener("blur", fn))
+        } else {
+            this.dom.forEach(e => e.dispatchEvent(new Event("blur")))
+        }
         return this
     }
 
+    /**
+     *  **trigger()** - Programatically triggers event.
+     * 
+     * ### Parameters:
+     * - "type" (string): event type to trigger
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining when setting the value.
+     */
+    trigger(type) {
+        const event = new Event(type)
+        this.dom.forEach(e => e.dispatchEvent(event))
+        return this
+    }
 }
