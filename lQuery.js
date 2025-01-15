@@ -314,7 +314,7 @@ class LQueryDOM {
         newLQueryDom.dom = this.dom.map(e => e.cloneNode(true))
         if (cloneEvents) {
             this.dom.forEach((e, i) => {
-                events.copyEvents(e, newLQueryDom.dom[i])
+                global.copyEvents(e, newLQueryDom.dom[i])
             })
         }
         return newLQueryDom
@@ -354,7 +354,7 @@ class LQueryDOM {
      * - Returns instance of "this" for method chaining.
      */
     on(type, fn) {
-        this.dom.forEach(e => events.addEvent(e, type, fn))
+        this.dom.forEach(e => global.addEvent(e, type, fn))
         return this
     }
 
@@ -369,7 +369,7 @@ class LQueryDOM {
      * - Returns instance of "this" for method chaining.
      */
     off(type, fn) {
-        this.dom.forEach(e => events.removeEvent(e, type, fn))
+        this.dom.forEach(e => global.removeEvent(e, type, fn))
         return this
     }
 
@@ -478,7 +478,7 @@ class LQueryDOM {
     }
 }
 
-class eventTracker {
+class globalTracker {
     constructor() {
         this.events = new Map() // Map gives better performance compared to Array.
     }
@@ -522,4 +522,4 @@ class eventTracker {
         }
     }
 }
-const events = new eventTracker()
+const global = new globalTracker()
