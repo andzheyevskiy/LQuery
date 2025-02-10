@@ -476,11 +476,143 @@ class LQueryDOM {
         this.dom.forEach(e => e.dispatchEvent(event))
         return this
     }
+
+    /**
+     *  **animate()** - Add animation to element
+     * 
+     * ### Parameters:
+     * - "animation" (object): object containing the end values.
+     * - "duration" (number | string) [optional]: duration of animation, number in case of ms, string in case of manual specification(ex: 1s, 1000ms). default: 400
+     * - "easing" (string) [optional]: easing aplied to the animation. default: "linear"
+     * - "complete" (function) [optional]: function to execute when animation is done.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining.
+     */
+    animate(animation, duration = "400ms", easing = "linear", complete) {
+        global.addAnimation(this.dom, animation, duration, easing)
+        const durationinMS = utils.convertToMs(duration)
+
+        if (complete && typeof complete === "function") {
+            setTimeout(() => { complete.call(this) }, durationinMS)
+        }
+
+        return this
+    }
+
+    /**
+     *  **fadeIn()** - Add fade in animation to element/s
+     * 
+     * ### Parameters:
+     * - "duration" (number | string) [optional]: duration of animation, number in case of ms, string in case of manual specification(ex: 1s, 1000ms). default: 400
+     * - "complete" (function) [optional]: function to execute when animation is done.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining.
+     */
+    fadeIn(duration="400ms", complete) {
+        global.addFadeIn(this.dom, duration, "linear")
+        const durationinMS = utils.convertToMs(duration)
+
+        if (complete && typeof complete === "function") {
+            setTimeout(() => { complete.call(this) }, durationinMS)
+        }
+
+        return this
+    }
+
+    /**
+     *  **fadeOut()** - Add fade out animation to element/s
+     * 
+     * ### Parameters:
+     * - "duration" (number | string) [optional]: duration of animation, number in case of ms, string in case of manual specification(ex: 1s, 1000ms). default: 400
+     * - "complete" (function) [optional]: function to execute when animation is done.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining.
+     */
+    fadeOut(duration="400ms", complete) {
+        global.addFadeOut(this.dom, duration, "linear")
+        const durationinMS = utils.convertToMs(duration)
+
+        if (complete && typeof complete === "function") {
+            setTimeout(() => { complete.call(this) }, durationinMS)
+        }
+
+        return this
+    }
+    /**
+     *  **slideDown()** - Add slide down animation to element/s
+     * 
+     * ### Parameters:
+     * - "duration" (number | string) [optional]: duration of animation, number in case of ms, string in case of manual specification(ex: 1s, 1000ms). default: 400
+     * - "complete" (function) [optional]: function to execute when animation is done.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining.
+     */
+    slideDown(duration="400ms", complete) {
+        global.addSlideDown(this.dom, duration, "linear")
+        const durationinMS = utils.convertToMs(duration)
+
+        if (complete && typeof complete === "function") {
+            setTimeout(() => { complete.call(this) }, durationinMS)
+        }
+
+        return this
+    }
+    /**
+     *  **slideUp()** - Add slide up animation to element/s
+     * 
+     * ### Parameters:
+     * - "duration" (number | string) [optional]: duration of animation, number in case of ms, string in case of manual specification(ex: 1s, 1000ms). default: 400
+     * - "complete" (function) [optional]: function to execute when animation is done.
+     * 
+     * ### Returns:
+     * - Returns instance of "this" for method chaining.
+     */
+    slideUp(duration="400ms", complete) {
+        global.addSlideUp(this.dom, duration, "linear")
+        const durationinMS = utils.convertToMs(duration)
+
+        if (complete && typeof complete === "function") {
+            setTimeout(() => { complete.call(this) }, durationinMS)
+        }
+
+        return this
+    }
+
+
 }
 
 class globalTracker {
     constructor() {
         this.events = new Map() // Map gives better performance compared to Array.
+        this.animationSeq = 0
+        this.animations = {
+            fadeIn: {
+                name: "LQueryAnimationFadeIn",
+                isIncluded: false,
+                css: "@keyframes LQueryAnimationFadeIn {from {opacity: 0;} to{opacity: 1;}}"
+
+            },
+            fadeOut: {
+                name: "LQueryAnimationFadeOut",
+                isIncluded: false,
+                css: "@keyframes LQueryAnimationFadeOut {from {opacity: 1;} to{opacity: 0;}}"
+            },
+            slideDown: {
+                name: "LQueryAnimationSlideDown",
+                isIncluded: false,
+                css: "@keyframes LQueryAnimationSlideDown { from {transform: translateY(-100%);} to {transform: translateY(0);}}"
+
+            },
+            slideUp: {
+                name: "LQueryAnimationSlideUp",
+                isIncluded: false,
+                css: "@keyframes LQueryAnimationSlideUp { from {transform: translateY(100%);} to {transform: translateY(0);}}"
+            }
+        }
     }
 
     addEvent(element, type, fn) {
@@ -521,5 +653,113 @@ class globalTracker {
             })
         }
     }
+
+    getStyle() {
+        const doesExist = document.querySelector("style")
+        if (!doesExist) {
+            const styleElement = document.createElement("style")
+            document.querySelector("head").appendChild(styleElement)
+            return styleElement
+        } else {
+            return doesExist
+        }
+    }
+
+    getAnimationName() {
+        return `LQueryAnimation${this.animationSeq++}`
+    }
+
+    addAnimation(elements, animation, duration, easing) {
+        const durationinMS = utils.convertToMs(duration)
+        const animationName = this.getAnimationName()
+        const formatted = Object.entries(animation)
+        .map(([key, value])=> `${key}: ${value}`)
+        .join("; ")
+        const animationStr = `@keyframes ${animationName} { to {${formatted}}}`
+        const inlineToAppend = `${animationName} ${durationinMS}ms ${easing} forwards`
+        this.getStyle().append(animationStr)
+        elements.forEach(e => {
+            const finalStr = e.style.animation ? `${e.style.animation},${inlineToAppend}` : inlineToAppend
+            e.style.animation = finalStr
+        })
+    }
+
+    addFadeIn(element, duration, easing) {
+        const durationinMS = utils.convertToMs(duration)
+        const animationName = this.animations.fadeIn.name
+        const inlineToAppend = `${animationName} ${durationinMS}ms ${easing} forwards`
+
+        if (!this.animations.fadeIn.isIncluded) {
+            this.getStyle().append(this.animations.fadeIn.css)
+            this.animations.fadeIn.isIncluded = true
+        }
+
+        element.forEach(e => {
+            const finalStr = e.style.animation ? `${e.style.animation},${inlineToAppend}` : inlineToAppend
+            e.style.animation = finalStr
+        })
+    }
+
+    addFadeOut(element, duration, easing) {
+        const durationinMS = utils.convertToMs(duration)
+        const animationName = this.animations.fadeOut.name
+        const inlineToAppend = `${animationName} ${durationinMS}ms ${easing} forwards`
+
+        if (!this.animations.fadeOut.isIncluded) {
+            this.getStyle().append(this.animations.fadeOut.css)
+            this.animations.fadeOut.isIncluded = true
+        }
+
+        element.forEach(e => {
+            const finalStr = e.style.animation ? `${e.style.animation},${inlineToAppend}` : inlineToAppend
+            e.style.animation = finalStr
+        })
+    }
+
+    addSlideDown(element, duration, easing) {
+        const durationinMS = utils.convertToMs(duration)
+        const animationName = this.animations.slideDown.name
+        const inlineToAppend = `${animationName} ${durationinMS}ms ${easing} forwards`
+
+        if (!this.animations.slideDown.isIncluded) {
+            this.getStyle().append(this.animations.slideDown.css)
+            this.animations.slideDown.isIncluded = true
+        }
+
+        element.forEach(e => {
+            const finalStr = e.style.animation ? `${e.style.animation},${inlineToAppend}` : inlineToAppend
+            e.style.animation = finalStr
+        })
+    }
+
+    addSlideUp(element, duration, easing) {
+        const durationinMS = utils.convertToMs(duration)
+        const animationName = this.animations.slideUp.name
+        const inlineToAppend = `${animationName} ${durationinMS}ms ${easing} forwards`
+
+        if (!this.animations.slideUp.isIncluded) {
+            this.getStyle().append(this.animations.slideUp.css)
+            this.animations.slideUp.isIncluded = true
+        }
+
+        element.forEach(e => {
+            const finalStr = e.style.animation ? `${e.style.animation},${inlineToAppend}` : inlineToAppend
+            e.style.animation = finalStr
+        })
+    }
+
+
 }
 const global = new globalTracker()
+
+const utils = {
+    convertToMs: function (string) {
+        if (typeof string === "number") {
+            return string
+        }else if (string.endsWith("ms")) {
+            return parseInt(string, 10)
+        } else if (string.endsWith("s")) {
+            return parseInt(string, 10) * 1000
+        } 
+    }
+}
