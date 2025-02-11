@@ -510,7 +510,7 @@ class LQueryDOM {
      * ### Returns:
      * - Returns instance of "this" for method chaining.
      */
-    fadeIn(duration="400ms", complete) {
+    fadeIn(duration = "400ms", complete) {
         global.addFadeIn(this.dom, duration, "linear")
         const durationinMS = utils.convertToMs(duration)
 
@@ -531,7 +531,7 @@ class LQueryDOM {
      * ### Returns:
      * - Returns instance of "this" for method chaining.
      */
-    fadeOut(duration="400ms", complete) {
+    fadeOut(duration = "400ms", complete) {
         global.addFadeOut(this.dom, duration, "linear")
         const durationinMS = utils.convertToMs(duration)
 
@@ -551,7 +551,7 @@ class LQueryDOM {
      * ### Returns:
      * - Returns instance of "this" for method chaining.
      */
-    slideDown(duration="400ms", complete) {
+    slideDown(duration = "400ms", complete) {
         global.addSlideDown(this.dom, duration, "linear")
         const durationinMS = utils.convertToMs(duration)
 
@@ -571,7 +571,7 @@ class LQueryDOM {
      * ### Returns:
      * - Returns instance of "this" for method chaining.
      */
-    slideUp(duration="400ms", complete) {
+    slideUp(duration = "400ms", complete) {
         global.addSlideUp(this.dom, duration, "linear")
         const durationinMS = utils.convertToMs(duration)
 
@@ -673,8 +673,8 @@ class globalTracker {
         const durationinMS = utils.convertToMs(duration)
         const animationName = this.getAnimationName()
         const formatted = Object.entries(animation)
-        .map(([key, value])=> `${key}: ${value}`)
-        .join("; ")
+            .map(([key, value]) => `${key}: ${value}`)
+            .join("; ")
         const animationStr = `@keyframes ${animationName} { to {${formatted}}}`
         const inlineToAppend = `${animationName} ${durationinMS}ms ${easing} forwards`
         this.getStyle().append(animationStr)
@@ -756,10 +756,10 @@ const utils = {
     convertToMs: function (string) {
         if (typeof string === "number") {
             return string
-        }else if (string.endsWith("ms")) {
+        } else if (string.endsWith("ms")) {
             return parseInt(string, 10)
         } else if (string.endsWith("s")) {
             return parseInt(string, 10) * 1000
-        } 
+        }
     }
 }
