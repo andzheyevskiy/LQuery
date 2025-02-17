@@ -964,3 +964,20 @@ class Ajax {
     }
 
 }
+
+const lQueryMiddleware = {
+    _request: (url, options, method) => {
+        if (typeof url === "object") {
+            url.method = method
+            return new Ajax(url)
+        } else {
+            options.method = method
+            return new Ajax(url, options)
+        }
+    },
+    ajax: (url, options) => { return new Ajax(url, options) },
+    get: (url, options) => { return lQueryMiddleware._request(url, options, "GET") },
+    post: (url, options) => { return lQueryMiddleware._request(url, options, "POST") },
+    put: (url, options) => { return lQueryMiddleware._request(url, options, "PUT") },
+    delete: (url, options) => { return lQueryMiddleware._request(url, options, "DELETE") }
+}
