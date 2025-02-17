@@ -763,3 +763,204 @@ const utils = {
         }
     }
 }
+
+/**
+ * **$.ajax()**: Executes an asynchronous AJAX request with customizable options.
+ * 
+ * ### Parameters:
+ * - url (string) [optional]: URL of the fetch request.
+ * - options (object) [optional]: Object containing the request options.
+ * - **Atleast one of the arguments needs to be provided**
+ * 
+ * #### Options:
+ * - accepts (object): A set of key/value pairs which get send in the Accept request header.
+ * - cache (boolean): When set to false, sets fetch cache options to "no-store".
+ * - complete (function): A function to run one the fetch operation is complete. Uses (error, data)=>{} callback.
+ * - contentType (string): Appends value to "Content-Type" header.
+ * - context (any): Defines "this" when running dataFilter(), statusCode(), success(), error() and complete() function. By default "this" is binded to the instance of the Ajax class.
+ * - crossDomain (boolean): When set to true, sets fetch mode to "cors".
+ * - data (string, object): Value to be used as fetch body. In case of a "GET" method, it will used as URL parameters.
+ * - dataFilter (function): function to handle the recieved data from the request.
+ * - dataType (string): Type of data back expecting from the server.
+ * - error (functions): A function to run when the operations fails. Uses (error)=>{} callback.
+ * - headers (object): Aditional custom headers to be sent with the request.
+ * - method (string): Method to use in the fetch request. By default: "GET".
+ * - statusCode (object): A set of key/values pairs, where key is the status code, and value is the function to run when the status of the request matches the status code. Depending on the status code uses (data|error)=>{} callback. Executed before success(), error() and complete().
+ * - success (function): A function to run when the operation succedes. Uses {data}=>{} callback.
+ * - timeout (number): Set a timeout(in ms) for the request.
+ * - url (string): URL of the fetch request.
+ * 
+ * ### Returns: 
+ * - Returns instance of "this".
+ */
+class Ajax {
+    constructor(url, options) {
+        if (!url && !options) { throw new Error("No url or options provided") }
+        this.url = typeof url === "string" ? url : options.url
+        this.options = typeof url === "object" ? url : options
+        this.method = options.method || "GET"
+        this.body = options.data
+        this.response = undefined
+        this.data = undefined
+        this.error = undefined
+        this.initPromise = this.init()
+    }
+
+    async init() {
+        /* ===== Headers ===== */
+        const headers = new Headers
+        if (this.options.accepts) {
+            Object.entries(this.options.accepts).forEach(([key, value]) => {
+                headers.append("Accept", `${key}: ${value}`)
+            })
+        }
+        if (this.options.contentType) { headers.append("Content-Type", this.options.contentType) }
+        if (this.options.headers) {
+            Object.entries(this.options.headers).forEach(([key, value]) => {
+                headers.append(key, value)
+            })
+        }
+
+        /* ===== Fetch options ===== */
+        const fetchOptions = { headers: headers, method: this.method, url: this.url }
+        if (this.options.cache === false) { fetchOptions.cache = "no-store" }
+        if (this.options.crossDomain) { fetchOptions.mode = "cors" }
+        if (this.body && this.method !== "GET") {
+            fetchOptions.body = JSON.stringify(this.body)
+        } else {
+            const urlParams = new URLSearchParams()
+            for (const key in this.body) {
+                if (this.body.hasOwnProperty(key)) {
+                    // Encoded for edge case handling
+                    urlParams.append(encodeURIComponent(key), encodeURIComponent(this.body[key]));
+                }
+                fetchOptions.url = `${this.url}?${urlParams.toString()}`
+            }
+        }
+
+        // Actually runs the init functions.
+        await this._useFetch(fetchOptions)
+        await this._formatData()
+        this._filterData()
+        this._handleComplete()
+    }
+
+    /* ===== Global Functions ===== */
+    //Named function to run fetch
+    _useFetch = async (options) => {
+        // Controllers
+        const controller = new AbortController();
+        options.signal = controller.signal
+        // Fetch
+        const fetchPromise = fetch(options) // No await, since it will be resolved by Promise.race
+        const finalFetchArr = [fetchPromise]
+
+        // Prep in case there is timeout
+        let timeoutPromise
+        if (this.options.timeout) {
+            timeoutPromise = new Promise((_, reject) => {
+                const timeoutId = setTimeout(() => {
+                    controller.abort()
+                    reject(new Error("Request timed out"))
+                }, this.options.timeout)
+
+                fetchPromise.finally(() => { clearTimeout(timeoutId) })
+            })
+            finalFetchArr.push(timeoutPromise)
+        }
+
+        // Fetch
+        try {
+            this.response = await Promise.race(finalFetchArr)
+        } catch (err) {
+            this.error = err
+        }
+    }
+
+    // Function to parse response
+    _format = async (format) => {
+        let data
+        const resText = await this.response.text()
+        switch (format) {
+            case "xml":
+                data = new DOMParser().parseFromString(resText, "application/xml")
+                break
+            case "html":
+                data = new DOMParser().parseFromString(resText, "text/html")
+                break
+            case "script":
+                const script = document.createElement("script")
+                script.textContent = resText
+                data = script
+                break
+            case "json":
+                data = await this.response.json()
+                break
+            case "text":
+                data = resText
+                break
+            default:
+                throw new Error(`Usupported format ${format}`)
+
+        }
+        this.data = data
+    }
+    // Format data
+    _formatData = async () => {
+        const type = this.options.dataType || "json"
+        if (this.response.ok) {
+            this.data = await this._format(type)
+        }
+    }
+    // Filter data in case its sepecified
+    _filterData = () => {
+        if (typeof this.options.dataFilter === "function") {
+            this.data = this.options.dataFilter.call(this.options.context || this, this.data, this.options.dataType)
+        }
+    }
+
+    // Status code function. Executes functions depending on status code. 
+    _statusCode = () => {
+        if (this.options.statusCode) {
+            const code = this.response.status
+            const object = this.options.statusCode
+            const data = this.response.ok ? this.data : this.error
+            if (object.hasOwnProperty(code)) {
+                object[code].call(this.options.context, data)
+            }
+        }
+    }
+    // Success function, executed only if the operation succedes. response.ok checked inside this functions for reusability.
+    _success = () => {
+        if (this.response.ok) {
+            if (typeof this.options.success === "function") {
+                this.options.success.call(this.options.context, this.data)
+            }
+        }
+    }
+
+    // Error functions, executed only if there is an error. response.ok checked inside this functions for reusability.
+    _error = () => {
+        if (!this.response.ok) {
+            if (typeof this.options.error === "function") {
+                this.options.error.call(this.options.context, this.error)
+            }
+        }
+    }
+
+    // Complete function. Similar to finally. Uses (error, data) =>{}
+    _complete = () => {
+        if (typeof this.options.complete === "function") {
+            this.options.complete.call(this.options.context, this.error, this.data)
+        }
+    }
+
+    // Handle all the completing functions
+    _handleComplete = () => {
+        this._statusCode()
+        this._success()
+        this._error()
+        this._complete()
+    }
+
+}
