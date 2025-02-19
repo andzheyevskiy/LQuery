@@ -842,6 +842,43 @@ const $ = (function (query) {
             this._handleComplete()
         }
 
+        // Methods
+
+        // Chained method as alternative for "complete" option.
+        async done(fn) {
+            await this.initPromise
+            this._success(fn)
+            return this
+        }
+
+        // Chained method as alternative for "error" option.
+        async fail(fn) {
+            await this.initPromise
+            this._error(fn)
+            return this
+        }
+
+        // Chained method as alternative for "complete" option.
+        async always(fn) {
+            await this.initPromise
+            this._complete(fn)
+            return this
+        }
+
+        // Chained method to handle "done" and "fail" in a single method
+        async then(successFn, errorFn) {
+            await this.initPromise
+            if (successFn) this._complete(successFn)
+            if (errorFn) this._error(errorFn)
+            return this
+        }
+
+        // Chained method to catch errors, to be used with then
+        async catch(fn) {
+            this.fail(fn)
+            return this
+        }
+
         /* ===== Global Functions ===== */
         //Named function to run fetch
         _useFetch = async (options) => {
@@ -928,36 +965,36 @@ const $ = (function (query) {
             }
         }
         // Success function, executed only if the operation succedes. response.ok checked inside this functions for reusability.
-        _success = () => {
+        _success = (fn) => {
             if (this.response.ok) {
-                if (typeof this.options.success === "function") {
-                    this.options.success.call(this.options.context, this.data)
+                if (typeof fn === "function") {
+                    fn.call(this.options.context, this.data)
                 }
             }
         }
 
         // Error functions, executed only if there is an error. response.ok checked inside this functions for reusability.
-        _error = () => {
+        _error = (fn) => {
             if (!this.response.ok) {
-                if (typeof this.options.error === "function") {
-                    this.options.error.call(this.options.context, this.error)
+                if (typeof fn === "function") {
+                    fn.call(this.options.context, this.error)
                 }
             }
         }
 
         // Complete function. Similar to finally. Uses (error, data) =>{}
-        _complete = () => {
-            if (typeof this.options.complete === "function") {
-                this.options.complete.call(this.options.context, this.error, this.data)
+        _complete = (fn) => {
+            if (typeof fn === "function") {
+                fn.call(this.options.context, this.error, this.data)
             }
         }
 
         // Handle all the completing functions
         _handleComplete = () => {
             this._statusCode()
-            this._success()
-            this._error()
-            this._complete()
+            this._success(this.options.success)
+            this._error(this.options.error)
+            this._complete(this.options.complete)
         }
 
     }
