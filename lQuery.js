@@ -758,7 +758,62 @@ const $ = (function (query) {
             } else if (string.endsWith("s")) {
                 return parseInt(string, 10) * 1000
             }
-        }
+        },
+        each: function (item, fn) {
+            if (Array.isArray(item)) {
+                item.forEach(e => fn(e))
+            } else if (typeof item === "object" && item !== null && item !== undefined) {
+                Object.entries(item).forEach(([key, value]) => fn(key, value))
+            }
+        },
+        map: function (item, fn) {
+            if (Array.isArray(item)) {
+                return item.map(e => fn(e))
+            } else if (typeof item === "object" && item !== null && item !== undefined) {
+                return Object.entries(item).map(([key, value]) => fn(key, value))
+            }
+        },
+        grep: function (item, fn, invert = false) {
+            let items
+            if (Array.isArray(item)) {
+                items = invert ? [...item].reverse() : item
+                return items.filter(e => fn(e))
+            } else if (typeof item === "object" && item !== null && item !== undefined) {
+                const arrFromObj = Object.entries(item)
+                items = invert ? [...arrFromObj].reverse() : arrFromObj
+                return items.filter(([key, value]) => fn(key, value))
+            }
+        },
+        extend: function (deep, target, ...objects) {
+            if (typeof deep !== "boolean") {
+                objects.unshift(target)
+                target = deep
+                deep = false
+            }
+
+            if (!deep) {
+                return Object.assign({}, target, ...objects)
+            }
+
+            // Handle deep merge
+            const deepClone = (obj) => {
+                if (obj === null || typeof obj !== "object") return obj
+                if (Array.isArray(obj)) return obj.map(deepClone)
+                return Object.keys(obj).reduce((acc, key) => {
+                    acc[key] = deepClone(obj[key])
+                    return acc
+                }, {})
+            };
+
+            const combined = [target, ...objects]
+            const deepCopies = combined.map(deepClone)
+
+            return deepCopies.reduce((merged, current) => {
+                return { ...merged, ...current }
+            }, {})
+
+        },
+
     }
 
     /**
@@ -1085,5 +1140,51 @@ const $ = (function (query) {
          * - Returns the Ajax instance
          * */
         delete: lQueryMiddleware.delete,
+        /**
+         * **$.each()**: Iterates through an Array or an Object and runs the specified function.
+         * 
+         * ### Parameters:
+         * - item (array | object): The item (array or object) to iterate through.
+         * - fn (function): Function to run on each iteration. For an array, the function receives the element. For an object, the function receives the key and value of each entry.
+         * 
+         * ### Returns:
+         * - void
+         */
+        each: utils.each,
+        /**
+         * **$.map()**: Iterates through an Array or an Object and returns the result of the function.
+         * 
+         * ### Parameters:
+         * - item (array | object): The item (array or object) to iterate through.
+         * - fn (function): Function to run on each iteration. For an array, the function receives the element. For an object, the function receives the key and value of each entry.
+         * 
+         * ### Returns:
+         * - Returns an array of the results of the function applied to each element.
+         */
+        map: utils.map,
+        /**
+         * **$.grep()**: Iterates through an Array or an Object and filters it based on a condition.
+         * 
+         * ### Parameters:
+         * - item (array | object): The item (array or object) to iterate through.
+         * - fn (function): Filter function to run on each iteration. This function should return a boolean indicating if the item should be included in the result.
+         * - invert (boolean, optional): If true, the array is reversed before applying the filter. Default is false.
+         * 
+         * ### Returns:
+         * - Returns an array of filtered items.
+         */
+        grep: utils.grep,
+        /**
+         * **$.extend()**: Merges a set of objects into one.
+         * 
+         * ### Parameters:
+         * - deep (boolean): Specifies if the merge should be deep (nested objects are merged). Default is false (shallow merge).
+         * - target (object): The target object to merge the other objects into.
+         * - objects (object): The objects to be merged into the target object.
+         * 
+         * ### Returns:
+         * - Returns the merged object.
+         */
+        extend: utils.extend,
     }
 })()
