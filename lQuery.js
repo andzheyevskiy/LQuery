@@ -1,4 +1,4 @@
-const $ = (function (query) {
+const $ = (function () {
 
 
     class LQueryDOM {
@@ -1071,120 +1071,123 @@ const $ = (function (query) {
         delete: (url, options) => { return lQueryMiddleware._request(url, options, "DELETE") }
     }
 
-    if (query) {
-        return new LQueryDOM(query)
+    function finalHandler(query) {
+        if (query) {
+            return new LQueryDOM(query)
+        }
     }
-    return {
-        /**
-         * **$.ajax()**: Executes an asynchronous AJAX request with customizable options.
-         * 
-         * ### Parameters:
-         * - url (string) [optional]: URL of the AJAX request.
-         * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
-         * 
-         * **Atleast one argument(url or options) needs to be provided** 
-         * 
-         * ### Returns:
-         * - Returns the Ajax instance
-         * */
-        ajax: lQueryMiddleware.ajax,
-        /**
-         * **$.get()**: Executes an asynchronous GET request.
-         * 
-         * ### Parameters:
-         * - url (string) [optional]: URL of the AJAX request.
-         * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
-         * 
-         * **Atleast one argument(url or options) needs to be provided** 
-         * 
-         * ### Returns:
-         * - Returns the Ajax instance
-         * */
-        get: lQueryMiddleware.get,
-        /**
-         * **$.post()**: Executes an asynchronous POST request.
-         * 
-         * ### Parameters:
-         * - url (string) [optional]: URL of the AJAX request.
-         * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
-         * 
-         * **Atleast one argument(url or options) needs to be provided** 
-         * 
-         * ### Returns:
-         * - Returns the Ajax instance
-         * */
-        post: lQueryMiddleware.post,
-        /**
-         * **$.put()**: Executes an asynchronous PUT request.
-         * 
-         * ### Parameters:
-         * - url (string) [optional]: URL of the AJAX request.
-         * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
-         * 
-         * **Atleast one argument(url or options) needs to be provided** 
-         * 
-         * ### Returns:
-         * - Returns the Ajax instance
-         * */
-        put: lQueryMiddleware.put,
-        /**
-         * **$.delete()**: Executes an asynchronous DELETE request.
-         * 
-         * ### Parameters:
-         * - url (string) [optional]: URL of the AJAX request.
-         * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
-         * 
-         * **Atleast one argument(url or options) needs to be provided** 
-         * 
-         * ### Returns:
-         * - Returns the Ajax instance
-         * */
-        delete: lQueryMiddleware.delete,
-        /**
-         * **$.each()**: Iterates through an Array or an Object and runs the specified function.
-         * 
-         * ### Parameters:
-         * - item (array | object): The item (array or object) to iterate through.
-         * - fn (function): Function to run on each iteration. For an array, the function receives the element. For an object, the function receives the key and value of each entry.
-         * 
-         * ### Returns:
-         * - void
-         */
-        each: utils.each,
-        /**
-         * **$.map()**: Iterates through an Array or an Object and returns the result of the function.
-         * 
-         * ### Parameters:
-         * - item (array | object): The item (array or object) to iterate through.
-         * - fn (function): Function to run on each iteration. For an array, the function receives the element. For an object, the function receives the key and value of each entry.
-         * 
-         * ### Returns:
-         * - Returns an array of the results of the function applied to each element.
-         */
-        map: utils.map,
-        /**
-         * **$.grep()**: Iterates through an Array or an Object and filters it based on a condition.
-         * 
-         * ### Parameters:
-         * - item (array | object): The item (array or object) to iterate through.
-         * - fn (function): Filter function to run on each iteration. This function should return a boolean indicating if the item should be included in the result.
-         * - invert (boolean, optional): If true, the array is reversed before applying the filter. Default is false.
-         * 
-         * ### Returns:
-         * - Returns an array of filtered items.
-         */
-        grep: utils.grep,
-        /**
-         * **$.extend()**: Merges a set of objects into one.
-         * 
-         * ### Parameters:
-         * - deep (boolean): Specifies if the merge should be deep (nested objects are merged). Default is false (shallow merge).
-         * - target (object): The target object to merge the other objects into.
-         * - objects (object): The objects to be merged into the target object.
-         * 
-         * ### Returns:
-         * - Returns the merged object.
-         */
-        extend: utils.extend,
-    }
+
+    /**
+     *  * **$.ajax()**: Executes an asynchronous AJAX request with customizable options.
+     * 
+     * ### Parameters:
+     * - url (string) [optional]: URL of the AJAX request.
+     * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
+     * 
+     * **Atleast one argument(url or options) needs to be provided** 
+     * 
+     * ### Returns:
+     * - Returns the Ajax instance
+     * */
+    finalHandler.ajax = lQueryMiddleware.ajax
+    /**
+     * **$.get()**: Executes an asynchronous GET request.
+     * 
+     * ### Parameters:
+     * - url (string) [optional]: URL of the AJAX request.
+     * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
+     * 
+     * **Atleast one argument(url or options) needs to be provided** 
+     * 
+     * ### Returns:
+     * - Returns the Ajax instance
+     * */
+    finalHandler.get = lQueryMiddleware.get
+    /**
+     * **$.post()**: Executes an asynchronous POST request.
+     * 
+     * ### Parameters:
+     * - url (string) [optional]: URL of the AJAX request.
+     * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
+     * 
+     * **Atleast one argument(url or options) needs to be provided** 
+     * 
+     * ### Returns:
+     * - Returns the Ajax instance
+     * */
+    finalHandler.post = lQueryMiddleware.post
+    /**
+     * **$.put()**: Executes an asynchronous PUT request.
+     * 
+     * ### Parameters:
+     * - url (string) [optional]: URL of the AJAX request.
+     * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
+     * 
+     * **Atleast one argument(url or options) needs to be provided** 
+     * 
+     * ### Returns:
+     * - Returns the Ajax instance
+     * */
+    finalHandler.put = lQueryMiddleware.put
+    /**
+     * **$.delete()**: Executes an asynchronous DELETE request.
+     * 
+     * ### Parameters:
+     * - url (string) [optional]: URL of the AJAX request.
+     * - options (object) [optional]: Object containing the request options. An object containing additional configuration options for the AJAX request. Refer to the Ajax options documentation for more details.
+     * 
+     * **Atleast one argument(url or options) needs to be provided** 
+     * 
+     * ### Returns:
+     * - Returns the Ajax instance
+     * */
+    finalHandler.delete = lQueryMiddleware.delete
+    /**
+     * **$.each()**: Iterates through an Array or an Object and runs the specified function.
+     * 
+     * ### Parameters:
+     * - item (array | object): The item (array or object) to iterate through.
+     * - fn (function): Function to run on each iteration. For an array, the function receives the element. For an object, the function receives the key and value of each entry.
+     * 
+     * ### Returns:
+     * - void
+     */
+    finalHandler.each = utils.each
+    /**
+     * **$.map()**: Iterates through an Array or an Object and returns the result of the function.
+     * 
+     * ### Parameters:
+     * - item (array | object): The item (array or object) to iterate through.
+     * - fn (function): Function to run on each iteration. For an array, the function receives the element. For an object, the function receives the key and value of each entry.
+     * 
+     * ### Returns:
+     * - Returns an array of the results of the function applied to each element.
+     */
+    finalHandler.map = utils.map
+    /**
+     * **$.grep()**: Iterates through an Array or an Object and filters it based on a condition.
+     * 
+     * ### Parameters:
+     * - item (array | object): The item (array or object) to iterate through.
+     * - fn (function): Filter function to run on each iteration. This function should return a boolean indicating if the item should be included in the result.
+     * - invert (boolean, optional): If true, the array is reversed before applying the filter. Default is false.
+     * 
+     * ### Returns:
+     * - Returns an array of filtered items.
+     */
+    finalHandler.grep = utils.grep
+    /**
+     * **$.extend()**: Merges a set of objects into one.
+     * 
+     * ### Parameters:
+     * - deep (boolean): Specifies if the merge should be deep (nested objects are merged). Default is false (shallow merge).
+     * - target (object): The target object to merge the other objects into.
+     * - objects (object): The objects to be merged into the target object.
+     * 
+     * ### Returns:
+     * - Returns the merged object.
+     */
+    finalHandler.extend = utils.extend
+
+    return finalHandler
 })()
