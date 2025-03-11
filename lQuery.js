@@ -941,16 +941,18 @@ const $ = (function () {
             const controller = new AbortController();
             options.signal = controller.signal
             // Fetch
-            const fetchPromise = fetch(options) // No await, since it will be resolved by Promise.race
+            const fetchPromise = fetch(options.url, options).catch(err => {
+                if (err.name !== "AbortError") throw err
+            }) // No await, since it will be resolved by Promise.race
             const finalFetchArr = [fetchPromise]
 
             // Prep in case there is timeout
             let timeoutPromise
             if (this.options.timeout) {
-                timeoutPromise = new Promise((_, reject) => {
+                timeoutPromise = new Promise((resolve) => {
                     const timeoutId = setTimeout(() => {
                         controller.abort()
-                        reject(new Error("Request timed out"))
+                        resolve({ok:false, status: "timeout", statusText: "Request timed out"})
                     }, this.options.timeout)
 
                     fetchPromise.finally(() => { clearTimeout(timeoutId) })
@@ -961,7 +963,9 @@ const $ = (function () {
             // Fetch
             try {
                 this.response = await Promise.race(finalFetchArr)
+                if (!this.response.ok) this.error = `HTTP error! status: ${this.response.status} - ${this.response.statusText}`
             } catch (err) {
+                this.response = { ok: false, status: 'error', statusText: err.message }
                 this.error = err
             }
         }
@@ -969,17 +973,16 @@ const $ = (function () {
         // Function to parse response
         _format = async (format) => {
             let data
-            const resText = await this.response.text()
             switch (format) {
                 case "xml":
-                    data = new DOMParser().parseFromString(resText, "application/xml")
+                    data = new DOMParser().parseFromString(await this.response.text(), "application/xml")
                     break
                 case "html":
-                    data = new DOMParser().parseFromString(resText, "text/html")
+                    data = new DOMParser().parseFromString(await this.response.text(), "text/html")
                     break
                 case "script":
                     const script = document.createElement("script")
-                    script.textContent = resText
+                    script.textContent = await this.response.text()
                     data = script
                     break
                 case "json":
@@ -992,7 +995,7 @@ const $ = (function () {
                     throw new Error(`Usupported format ${format}`)
 
             }
-            this.data = data
+            return data
         }
         // Format data
         _formatData = async () => {
@@ -1030,7 +1033,7 @@ const $ = (function () {
 
         // Error functions, executed only if there is an error. response.ok checked inside this functions for reusability.
         _error = (fn) => {
-            if (!this.response.ok) {
+            if (this.error) {
                 if (typeof fn === "function") {
                     fn.call(this.options.context, this.error)
                 }
