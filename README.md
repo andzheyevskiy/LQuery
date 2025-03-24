@@ -61,6 +61,14 @@ The `$(selector)` function is used to select DOM elements and perform various op
   - **Returns:**
     - `this`: Instance for method chaining when setting styles.
 
+### `addClass(...args)`
+- **Description:** Adds one or more CSS class names to the selected elements. When a string is provided, the class names are added as-is, split by spaces. When a function is provided, the function is called with the index and current class name of each element, and the resulting class names (split by spaces) are added.
+- **Parameters:**
+  - `args` (string) [Optional]: A string containing one or more class names to be added to the selected elements. Class names should be separated by spaces.
+  - `args` (function) [Optional]: A function that takes two parameters: the index of the element and its current class name. The function should return a string of class names to be added to the element, separated by spaces.
+- **Returns:**
+  - `this`: The instance for method chaining, allowing subsequent operations on the same selection.
+
 - **append(html)**
   - **Description:** Appends the specified HTML to the selected elements.
   - **Parameters:**
@@ -95,6 +103,14 @@ The `$(selector)` function is used to select DOM elements and perform various op
     - `selector` (string) [Optional]: When provided, removes matching child elements.
   - **Returns:**
     - void
+
+### `detach(selector)`
+- **Description:** Removes the selected element(s) from the DOM, but keeps references to the detached elements. These elements can be reinserted into the DOM or further manipulated. If a `selector` is provided, only the child elements matching the selector will be detached. If no selector is provided, the currently selected elements will be detached as a whole.
+- **Parameters:**
+  - `selector` (string) [Optional]: A CSS selector to match child elements of the selected elements. Only the matching child elements will be detached.
+- **Returns:**
+  - `LQueryDOM`: A new instance of the `LQueryDOM` class containing the detached elements. The detached elements are removed from the DOM but are still accessible for further manipulation.
+
 
 - **empty()**
   - **Description:** Removes all child elements of the selected elements.

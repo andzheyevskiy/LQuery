@@ -166,6 +166,29 @@ const $ = (function () {
         }
 
         /**
+        * **addClass()** - Adds class to element/s
+         * 
+        * ### Parameters:
+        * - "value" (string): Class(or classes separated by spaces) to add to the element/s.
+        * - "fn" (function): Function that returns a string class(or classes separated by spaces) to add to the class. (index, currentClassName)=>String
+        * 
+        * ### Returns: 
+        * - Returns instance of "this" for method chaining when setting the value.
+        */
+        addClass(arg) {
+            this.dom.forEach((e, i) => {
+                let clases = []
+                if (typeof arg === "string") {
+                    clases = arg.split(" ")
+                } else if (typeof arg === "function") {
+                    clases = arg(i, e.className).split(" ")
+                }
+                clases.forEach(classToAdd => e.classList.add(classToAdd))
+            })
+            return this
+        }
+
+        /**
          *  **append()** - Append html to element/s
          * 
          * ### Parameters:
@@ -252,6 +275,33 @@ const $ = (function () {
             } else {
                 this.dom.forEach(e => e.remove())
             }
+        }
+
+        /**
+         *  **detach()** - Detaches element/s from DOM
+         * 
+         * ### Parameters:
+         * - "selector" (string) [optional]: When provided, detaches matching element's childs.
+         * 
+         * ### Returns:
+         * - Returns detached HTMLElements for later manipulation.
+         */
+        detach(selector) {
+            let elements = []
+            if (selector) {
+                this.dom.forEach(e => e.querySelectorAll(selector).forEach(x => {
+                    elements.push(x)
+                    x.remove()
+                }))
+            } else {
+                this.dom.forEach(e => {
+                    elements.push(e)
+                    e.remove()
+                })
+            }
+            const newLquery = new LQueryDOM()
+            newLquery.dom = [...elements]
+            return newLquery
         }
 
         /**
@@ -952,7 +1002,7 @@ const $ = (function () {
                 timeoutPromise = new Promise((resolve) => {
                     const timeoutId = setTimeout(() => {
                         controller.abort()
-                        resolve({ok:false, status: "timeout", statusText: "Request timed out"})
+                        resolve({ ok: false, status: "timeout", statusText: "Request timed out" })
                     }, this.options.timeout)
 
                     fetchPromise.finally(() => { clearTimeout(timeoutId) })
