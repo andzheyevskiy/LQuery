@@ -166,8 +166,70 @@ const $ = (function () {
         }
 
         /**
+        * **height()** - Get the current computed height for the first element in the set of matched elements.
+        * **height(value)** - Sets height for all matching elements.
+        * 
+        * ### Parameters:
+        * - "value" (string | number | function) [optional] - When provided, set the height for all matching elements.
+        * ### Returns: 
+        * - If no argument is provided returns computed height of the first element in the set of matched elements.
+        * - If no argument is provided and there is no matching elements, returns null.
+        * - When setting value, returns instance of this for method chaining.
+        */
+        height(value) {
+            if (value !== undefined) {
+                let val
+                // Outside the loop for performance benefits.
+                if (typeof value === "string") val = value
+                if (typeof value === "number") val = `${value}px`
+                this.dom.forEach((e, i) => {
+                    if (typeof value === "function") { val = value(i, e.offsetHeight) }
+                    e.style.height = val
+                })
+                return this
+            } else {
+                const element = this.dom[0]
+                if (!element) return null
+                const computedStyle = window.getComputedStyle(element)
+                const height = computedStyle.getPropertyValue('height').trim()
+                return height
+            }
+        }
+
+        /**
+        * **width()** - Get the current computed width for the first element in the set of matched elements.
+        * **width(value)** - Sets width for all matching elements.
+        * 
+        * ### Parameters:
+        * - "value" (string | number | function) [optional] - When provided, set the width for all matching elements.
+        * ### Returns: 
+        * - If no argument is provided returns computed width of the first element in the set of matched elements.
+        * - If no argument is provided and there is no matching elements, returns null.
+        * - When setting value, returns instance of this for method chaining.
+        */
+        height(value) {
+            if (value !== undefined) {
+                let val
+                // Outside the loop for performance benefits.
+                if (typeof value === "string") val = value
+                if (typeof value === "number") val = `${value}px`
+                this.dom.forEach((e, i) => {
+                    if (typeof value === "function") { val = value(i, e.offsetWidth) }
+                    e.style.width = val
+                })
+                return this
+            } else {
+                const element = this.dom[0]
+                if (!element) return null
+                const computedStyle = window.getComputedStyle(element)
+                const width = computedStyle.getPropertyValue('width').trim()
+                return width
+            }
+        }
+
+        /**
         * **addClass()** - Adds class to element/s
-         * 
+        * 
         * ### Parameters:
         * - "value" (string): Class(or classes separated by spaces) to add to the element/s.
         * - "fn" (function): Function that returns a string class(or classes separated by spaces) to add to the class. (index, currentClassName)=>String
@@ -186,6 +248,21 @@ const $ = (function () {
                 clases.forEach(classToAdd => e.classList.add(classToAdd))
             })
             return this
+        }
+
+        /**
+         *  **hasClass()** - Determines if any of the selected elements contains specified class.
+         * 
+         * ### Parameters:
+         * - "className" (string): The class name to search for.
+         * 
+         * ### Returns:
+         * - "true" if the class name is found in any of the elements.
+         * - "false" otherwise.         
+        */
+        hasClass(className) {
+            if (typeof className !== "string") return false;
+            return this.dom.some(e => e.classList.contains(className));
         }
 
         /**
